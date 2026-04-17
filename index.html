@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MediaSphere — Multimedia & HCI Showcase</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    /* ═══════════════════════════════════════
+       DESIGN TOKENS & THEME
+    ═══════════════════════════════════════ */
+    :root {
+      --bg:        #09090f;
+      --surface:   #111118;
+      --card:      #18181f;
+      --border:    #2a2a35;
+      --text:      #f0eee8;
+      --muted:     #7a7a90;
+      --accent:    #e8b84b;
+      --accent2:   #4f8ef7;
+      --danger:    #e85b5b;
+      --success:   #4fca8e;
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body:    'DM Sans', system-ui, sans-serif;
+      --radius: 10px;
+      --transition: 0.25s ease;
+    }
+    [data-theme="light"] {
+      --bg:      #f5f3ef;
+      --surface: #fdfcf9;
+      --card:    #ffffff;
+      --border:  #e0ddd5;
+      --text:    #1a1916;
+      --muted:   #7a7060;
+    }
+
+    /* ═══════════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+      transition: background var(--transition), color var(--transition);
+    }
+    img { max-width: 100%; display: block; }
+    a { color: var(--accent); text-decoration: none; }
+    button { cursor: pointer; font-family: var(--font-body); }
+
+    /* ═══════════════════════════════════════
+       SCROLL PROGRESS (HCI: system status)
+    ═══════════════════════════════════════ */
+    #scroll-progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      z-index: 9999;
+      transition: width 0.05s linear;
+    }
+
+    /* ═══════════════════════════════════════
+       NAVIGATION
+    ═══════════════════════════════════════ */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: rgba(9,9,15,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background var(--transition);
+    }
+    [data-theme="light"] nav { background: rgba(245,243,239,0.85); }
+    .nav-brand {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 0.2rem;
+      list-style: none;
+      align-items: center;
+    }
+    .nav-links a {
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 0.4rem 0.75rem;
+      border-radius: 6px;
+      transition: color var(--transition), background var(--transition);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--text); background: var(--card); }
+    .nav-right { display: flex; align-items: center; gap: 0.75rem; }
+    #theme-toggle {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.35rem 0.7rem;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: background var(--transition);
+    }
+    #theme-toggle:hover { background: var(--border); }
+    .nav-hamburger {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.4rem;
+      padding: 0.25rem;
+    }
+
+    /* ═══════════════════════════════════════
+       SHARED LAYOUT
+    ═══════════════════════════════════════ */
+    section { padding: 5rem 2rem; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+    .section-sub {
+      color: var(--muted);
+      max-width: 580px;
+      margin-bottom: 2.5rem;
+      font-size: 1.05rem;
+    }
+    .divider {
+      width: 48px; height: 3px;
+      background: var(--accent);
+      border-radius: 2px;
+      margin-bottom: 2rem;
+    }
+
+    /* Scroll reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+
+    /* ═══════════════════════════════════════
+       1. HERO
+    ═══════════════════════════════════════ */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 2rem;
+      overflow: hidden;
+    }
+    #particle-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid rgba(232,184,75,0.35);
+      background: rgba(232,184,75,0.08);
+      padding: 0.35rem 1rem;
+      border-radius: 100px;
+      margin-bottom: 1.5rem;
+      animation: fadeDown 0.8s ease 0.2s both;
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      font-weight: 900;
+      line-height: 1.02;
+      letter-spacing: -2px;
+      animation: fadeUp 0.9s ease 0.4s both;
+    }
+    .hero-title em { font-style: italic; color: var(--accent); }
+    .hero-sub {
+      margin: 1.25rem auto 2.5rem;
+      max-width: 520px;
+      font-size: 1.15rem;
+      color: var(--muted);
+      animation: fadeUp 0.9s ease 0.6s both;
+    }
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--accent);
+      color: #0a0a0a;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 0.85rem 2rem;
+      border-radius: 8px;
+      border: none;
+      animation: fadeUp 0.9s ease 0.8s both;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .hero-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(232,184,75,0.35);
+    }
+    .hero-scroll-hint {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--muted);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      animation: fadeUpCentered 1s ease 1.2s both;
+    }
+    .scroll-arrow {
+      width: 20px; height: 20px;
+      border-right: 2px solid var(--muted);
+      border-bottom: 2px solid var(--muted);
+      transform: rotate(45deg);
+      animation: scrollBounce 1.6s ease infinite;
+    }
+
+    /* ═══════════════════════════════════════
+       2. ABOUT / TYPOGRAPHY
+    ═══════════════════════════════════════ */
+    #about { background: var(--surface); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    .about-text h3 {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .about-text p {
+      color: var(--muted);
+      margin-bottom: 1rem;
+      font-size: 1.02rem;
+    }
+    .about-text blockquote {
+      border-left: 3px solid var(--accent);
+      padding: 0.75rem 1.25rem;
+      margin: 1.5rem 0;
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1.15rem;
+      color: var(--text);
+      background: var(--card);
+      border-radius: 0 var(--radius) var(--radius) 0;
+    }
+    .type-showcase {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    .type-showcase .t-h1 { font-family: var(--font-display); font-size: 2.2rem; font-weight: 900; }
+    .type-showcase .t-h2 { font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; }
+    .type-showcase .t-h3 { font-size: 1.2rem; font-weight: 600; }
+    .type-showcase .t-body { font-size: 1rem; color: var(--muted); }
+    .type-showcase .t-caption { font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+    .type-showcase .t-accent { color: var(--accent); font-weight: 600; }
+    .type-divider { height: 1px; background: var(--border); }
+
+    /* ═══════════════════════════════════════
+       3. GALLERY
+    ═══════════════════════════════════════ */
+    #gallery { background: var(--bg); }
+    .filter-bar {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    .filter-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 0.45rem 1.1rem;
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all var(--transition);
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #0a0a0a;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    .gallery-item {
+      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      cursor: pointer;
+      background: var(--card);
+    }
+    .gallery-item img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .gallery-item:hover img { transform: scale(1.07); }
+    .gallery-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
+      opacity: 0;
+      transition: opacity var(--transition);
+      display: flex;
+      align-items: flex-end;
+      padding: 1rem;
+    }
+    .gallery-item:hover .gallery-overlay { opacity: 1; }
+    .gallery-overlay span {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #fff;
+    }
+    .gallery-item[data-hidden="true"] { display: none; }
+
+    /* Lightbox */
+    #lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    #lightbox.open { opacity: 1; pointer-events: all; }
+    #lightbox img {
+      max-width: 90vw;
+      max-height: 85vh;
+      border-radius: 8px;
+      object-fit: contain;
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+    #lightbox.open img { transform: scale(1); }
+    #lightbox-close {
+      position: absolute;
+      top: 1.5rem; right: 1.5rem;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      transition: background var(--transition);
+    }
+    #lightbox-close:hover { background: rgba(255,255,255,0.2); }
+    #lightbox-caption {
+      position: absolute;
+      bottom: 1.5rem;
+      color: rgba(255,255,255,0.6);
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* ═══════════════════════════════════════
+       4. AUDIO
+    ═══════════════════════════════════════ */
+    #audio-section { background: var(--surface); }
+    .audio-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem;
+      max-width: 620px;
+    }
+    .audio-meta { margin-bottom: 1.5rem; }
+    .audio-meta .track-title {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+    .audio-meta .track-artist { color: var(--muted); font-size: 0.9rem; margin-top: 0.25rem; }
+    .waveform-bars {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      height: 48px;
+      margin-bottom: 1.5rem;
+    }
+    .bar {
+      flex: 1;
+      background: var(--border);
+      border-radius: 3px;
+      transition: background 0.3s;
+      transform-origin: bottom;
+    }
+    .playing .bar { background: var(--accent); }
+    .audio-controls { display: flex; flex-direction: column; gap: 1rem; }
+    .audio-buttons { display: flex; align-items: center; gap: 1rem; }
+    .btn-play {
+      width: 50px; height: 50px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: none;
+      color: #0a0a0a;
+      font-size: 1.15rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-play:hover { transform: scale(1.08); box-shadow: 0 4px 20px rgba(232,184,75,0.4); }
+    .time-display { color: var(--muted); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+    .audio-seek {
+      width: 100%;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border);
+      outline: none;
+      cursor: pointer;
+    }
+    .audio-seek::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+    }
+    .volume-row { display: flex; align-items: center; gap: 0.75rem; color: var(--muted); font-size: 0.85rem; }
+    .audio-volume {
+      flex: 1; -webkit-appearance: none; appearance: none;
+      height: 3px; border-radius: 2px;
+      background: var(--border); outline: none; cursor: pointer;
+    }
+    .audio-volume::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px; height: 12px;
+      border-radius: 50%; background: var(--accent2); cursor: pointer;
+    }
+
+    /* ═══════════════════════════════════════
+       5. VIDEO
+    ═══════════════════════════════════════ */
+    #video-section { background: var(--bg); }
+    .video-wrapper {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #000;
+      aspect-ratio: 16/9;
+      max-width: 800px;
+      margin: 0 auto;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+    }
+    .video-wrapper iframe {
+      width: 100%; height: 100%;
+      border: none;
+      display: block;
+    }
+    .video-border-glow {
+      position: absolute;
+      inset: -2px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      z-index: -1;
+      opacity: 0.4;
+    }
+
+    /* ═══════════════════════════════════════
+       6. DATA VISUALIZATION
+    ═══════════════════════════════════════ */
+    #dataviz { background: var(--surface); }
+    .chart-container {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 800px;
+    }
+    .chart-legend {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .legend-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+
+    /* ═══════════════════════════════════════
+       7. ANIMATIONS SHOWCASE
+    ═══════════════════════════════════════ */
+    #animations { background: var(--bg); }
+    .anim-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    .anim-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.75rem 1.5rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .anim-card .label { font-size: 0.8rem; color: var(--muted); font-weight: 500; }
+    /* Individual animations */
+    .demo-spin {
+      width: 48px; height: 48px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1.2s linear infinite;
+    }
+    .demo-pulse {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: var(--accent2);
+      animation: pulse 1.5s ease infinite;
+    }
+    .demo-bounce {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: bounceBall 0.9s ease infinite alternate;
+    }
+    .demo-wave {
+      display: flex;
+      gap: 5px;
+      align-items: flex-end;
+      height: 48px;
+    }
+    .demo-wave span {
+      width: 6px;
+      background: var(--accent);
+      border-radius: 3px;
+      animation: wave 0.9s ease infinite;
+    }
+    .demo-wave span:nth-child(2) { animation-delay: 0.12s; }
+    .demo-wave span:nth-child(3) { animation-delay: 0.24s; }
+    .demo-wave span:nth-child(4) { animation-delay: 0.36s; }
+    .demo-wave span:nth-child(5) { animation-delay: 0.48s; }
+    .demo-morph {
+      width: 48px; height: 48px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      animation: morph 3s ease infinite;
+    }
+    .demo-float {
+      font-size: 2rem;
+      animation: floatY 2.5s ease infinite alternate;
+    }
+    .demo-gradient {
+      width: 80px; height: 48px;
+      border-radius: 6px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent));
+      background-size: 200%;
+      animation: gradientShift 2s linear infinite;
+    }
+    .demo-typewriter {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      overflow: hidden;
+      white-space: nowrap;
+      border-right: 2px solid var(--accent);
+      animation: typewriter 3s steps(12) infinite, blink 0.6s step-end infinite alternate;
+      max-width: 120px;
+    }
+
+    /* ═══════════════════════════════════════
+       8. CONTACT FORM
+    ═══════════════════════════════════════ */
+    #contact { background: var(--surface); }
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    .contact-info h3 {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .contact-info p { color: var(--muted); margin-bottom: 1.5rem; }
+    .contact-chips {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .contact-chip {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .contact-chip .icon {
+      width: 36px; height: 36px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+    }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      color: var(--text);
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color var(--transition);
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus { border-color: var(--accent2); }
+    .form-group input.valid,
+    .form-group textarea.valid { border-color: var(--success); }
+    .form-group input.invalid,
+    .form-group textarea.invalid { border-color: var(--danger); }
+    .form-group select option { background: var(--card); }
+    .form-group textarea { resize: vertical; min-height: 120px; }
+    .field-msg { font-size: 0.78rem; margin-top: 0.35rem; display: none; }
+    .field-msg.show { display: block; }
+    .field-msg.error { color: var(--danger); }
+    .field-msg.success { color: var(--success); }
+    .btn-submit {
+      width: 100%;
+      padding: 0.9rem;
+      background: var(--accent);
+      color: #0a0a0a;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: opacity var(--transition), transform var(--transition);
+    }
+    .btn-submit:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .btn-spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(0,0,0,0.3);
+      border-top-color: #000;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+
+    /* ═══════════════════════════════════════
+       TOAST NOTIFICATION
+    ═══════════════════════════════════════ */
+    #toast {
+      position: fixed;
+      bottom: 2rem; right: 2rem;
+      background: var(--success);
+      color: #0a0a0a;
+      padding: 0.9rem 1.5rem;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      transform: translateY(120%);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 3000;
+      box-shadow: 0 8px 32px rgba(79,202,142,0.3);
+    }
+    #toast.show { transform: translateY(0); }
+
+    /* ═══════════════════════════════════════
+       9. FOOTER
+    ═══════════════════════════════════════ */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 3rem 2rem;
+    }
+    .footer-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      text-align: center;
+    }
+    .footer-brand {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--accent);
+    }
+    .footer-tagline { color: var(--muted); font-size: 0.9rem; }
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .footer-links a {
+      color: var(--muted);
+      font-size: 0.85rem;
+      transition: color var(--transition);
+    }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-social {
+      display: flex;
+      gap: 0.75rem;
+    }
+    .social-btn {
+      width: 38px; height: 38px;
+      border-radius: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: all var(--transition);
+      text-decoration: none;
+    }
+    .social-btn:hover { background: var(--accent); border-color: var(--accent); color: #000; }
+    .footer-copy { color: var(--muted); font-size: 0.8rem; }
+
+    /* ═══════════════════════════════════════
+       BACK TO TOP (HCI: user freedom)
+    ═══════════════════════════════════════ */
+    #back-to-top {
+      position: fixed;
+      bottom: 2rem; left: 2rem;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: none;
+      color: #0a0a0a;
+      font-size: 1.1rem;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0;
+      transform: translateY(20px);
+      pointer-events: none;
+      transition: opacity 0.3s, transform 0.3s;
+      z-index: 999;
+      box-shadow: 0 4px 20px rgba(232,184,75,0.3);
+    }
+    #back-to-top.visible { opacity: 1; transform: translateY(0); pointer-events: all; }
+    #back-to-top:hover { transform: translateY(-3px); }
+
+    /* ═══════════════════════════════════════
+       KEYFRAME ANIMATIONS
+    ═══════════════════════════════════════ */
+    @keyframes fadeUp   { from { opacity:0; transform:translateY(24px);} to {opacity:1; transform:translateY(0);} }
+    @keyframes fadeDown { from { opacity:0; transform:translateY(-16px);} to {opacity:1; transform:translateY(0);} }
+    @keyframes spin     { to { transform: rotate(360deg); } }
+    @keyframes pulse    { 0%,100%{transform:scale(1);opacity:0.8;} 50%{transform:scale(1.3);opacity:0.4;} }
+    @keyframes bounceBall { to { transform:translateY(-28px); } }
+    @keyframes wave     { 0%,100%{height:8px;} 50%{height:40px;} }
+    @keyframes morph    { 0%,100%{border-radius:30% 70% 70% 30%/30% 30% 70% 70%;} 50%{border-radius:70% 30% 30% 70%/70% 70% 30% 30%;} }
+    @keyframes floatY   { from{transform:translateY(0);} to{transform:translateY(-14px);} }
+    @keyframes gradientShift { 0%{background-position:0%;} 100%{background-position:200%;} }
+    @keyframes typewriter { 0%,100%{width:0;} 50%{width:120px;} }
+    @keyframes blink    { 50%{border-color:transparent;} }
+    @keyframes scrollBounce { 0%,100%{transform:rotate(45deg) translate(0,0);} 50%{transform:rotate(45deg) translate(4px,4px);} }
+    @keyframes fadeUpCentered {
+      from { opacity: 0; transform: translate(-50%, 24px); }
+      to   { opacity: 1; transform: translate(-50%, 0); }
+    }
+
+    /* ═══════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════ */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 60px; left: 0; right: 0;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem;
+        gap: 0.25rem;
+      }
+      .nav-hamburger { display: flex; }
+      .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .anim-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+      section { padding: 3rem 1.25rem; }
+      .anim-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── SCROLL PROGRESS ───────────────────────── -->
+<div id="scroll-progress" aria-hidden="true"></div>
+
+<!-- ── NAVIGATION ────────────────────────────── -->
+<nav role="navigation" aria-label="Main navigation">
+  <span class="nav-brand">MediaSphere</span>
+  <ul class="nav-links" id="nav-links" role="list">
+    <li><a href="#hero">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#audio-section">Audio</a></li>
+    <li><a href="#video-section">Video</a></li>
+    <li><a href="#dataviz">Data</a></li>
+    <li><a href="#animations">Motion</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <button id="theme-toggle" aria-label="Toggle colour theme" title="Toggle theme">🌙</button>
+    <button class="nav-hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">☰</button>
+  </div>
+</nav>
+
+<!-- ── HERO ──────────────────────────────────── -->
+<section id="hero" aria-labelledby="hero-title">
+  <canvas id="particle-canvas" aria-hidden="true"></canvas>
+  <div class="hero-badge">🎓 MULTIMEDIA & HCI SHOWCASE</div>
+  <h1 class="hero-title" id="hero-title">Where <em>Media</em><br>Meets Interaction</h1>
+  <p class="hero-sub">A comprehensive demonstration of multimedia elements — text, graphics, audio, video, animation, and data — guided by Human-Computer Interaction principles.</p>
+  <a href="#about" class="hero-cta">Explore the Showcase ↓</a>
+  <div class="hero-scroll-hint" aria-hidden="true">
+    <span>Scroll</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- ── ABOUT / TYPOGRAPHY ────────────────────── -->
+<section id="about" aria-labelledby="about-title">
+  <div class="container">
+    <div class="section-label">01 — Text & Typography</div>
+    <h2 class="section-title reveal" id="about-title">The Foundation of Communication</h2>
+    <div class="divider"></div>
+    <div class="about-grid">
+      <div class="about-text reveal reveal-delay-1">
+        <h3>What is Multimedia?</h3>
+        <p>Multimedia refers to the integration of multiple forms of content — text, audio, images, animation, and video — into a single interactive experience. Modern digital systems leverage these modalities to communicate complex ideas efficiently.</p>
+        <blockquote>"Design is not just what it looks like and feels like. Design is how it works." — Steve Jobs</blockquote>
+        <p>Human-Computer Interaction (HCI) is the discipline that studies how people interact with computers and designs systems that are safe, efficient, and enjoyable to use. Every interface decision — from button placement to colour contrast — affects usability.</p>
+        <h3 style="margin-top:1.5rem;">Why HCI Principles Matter</h3>
+        <p>Good HCI design reduces cognitive load, prevents errors, and creates interfaces that users can navigate intuitively. This page demonstrates core Nielsen-Molich heuristics through practical, visible implementation.</p>
+      </div>
+      <div class="type-showcase reveal reveal-delay-2" role="complementary" aria-label="Typography scale">
+        <div class="t-caption">Typography Hierarchy Showcase</div>
+        <div class="type-divider"></div>
+        <div class="t-h1">Display / H1</div>
+        <div class="t-h2">Heading / H2</div>
+        <div class="t-h3">Subheading / H3</div>
+        <div class="type-divider"></div>
+        <div class="t-body">Body text — Regular weight, 1rem/1.7 line-height. Comfortable for long-form reading with optimal measure between 55–75 characters per line.</div>
+        <div class="t-caption">Caption — Small / Uppercase / Spaced</div>
+        <div class="t-accent">Accent — Bold / Highlighted</div>
+        <div class="type-divider"></div>
+        <p style="font-style:italic;color:var(--muted);font-size:0.85rem;">Fonts: Playfair Display (display) + DM Sans (body)</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── GALLERY ────────────────────────────────── -->
+<section id="gallery" aria-labelledby="gallery-title">
+  <div class="container">
+    <div class="section-label">02 — Graphics & Images</div>
+    <h2 class="section-title reveal" id="gallery-title">Visual Gallery</h2>
+    <div class="divider"></div>
+    <p class="section-sub">Click any image to view full-size. <strong>HCI:</strong> Recognition over recall — visual exploration without friction.</p>
+    <div class="gallery-grid reveal reveal-delay-1" id="gallery-grid" role="list">
+      <!-- Images via unsplash — HCI & UX/UI themed -->
+      <div class="gallery-item" data-cat="design"   data-label="Interface Design"       role="listitem" tabindex="0" aria-label="Open Interface Design image">
+        <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600&h=450&fit=crop"   alt="User interface design on screen" loading="lazy" />
+        <div class="gallery-overlay"><span>Design</span></div>
+      </div>
+      <div class="gallery-item" data-cat="research" data-label="User Research & Testing"   role="listitem" tabindex="0" aria-label="Open User Research image">
+        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=450&fit=crop"  alt="Team conducting user research" loading="lazy" />
+        <div class="gallery-overlay"><span>Research</span></div>
+      </div>
+      <div class="gallery-item" data-cat="develop" data-label="Develop"   role="listitem" tabindex="0" aria-label="Open Develop image">
+        <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=450&fit=crop"   alt="Interaction design prototyping" loading="lazy" />
+        <div class="gallery-overlay"><span>Develop</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Lightbox (HCI: user control — close anytime) -->
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
+  <button id="lightbox-close" aria-label="Close image viewer">✕</button>
+  <img id="lightbox-img" src="" alt="" />
+  <p id="lightbox-caption"></p>
+</div>
+
+<!-- ── AUDIO ─────────────────────────────────── -->
+<section id="audio-section" aria-labelledby="audio-title">
+  <div class="container">
+    <div class="section-label">03 — Audio</div>
+    <h2 class="section-title reveal" id="audio-title">Listen</h2>
+    <div class="divider"></div>
+    <p class="section-sub">A custom-styled HTML5 audio player. The animated bars respond to playback state. <strong>HCI:</strong> System status — controls clearly reflect current state.</p>
+    <div class="audio-card reveal reveal-delay-1">
+      <div class="audio-meta">
+        <div class="track-title">Ambient Study Track</div>
+        <div class="track-artist">SoundHelix — royalty-free sample</div>
+      </div>
+      <!-- Animated waveform bars -->
+      <div class="waveform-bars" id="waveform-bars" aria-hidden="true">
+        <!-- 36 bars generated by JS -->
+      </div>
+      <audio id="audio-player" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" preload="metadata" aria-label="Audio player"></audio>
+      <div class="audio-controls">
+        <input type="range" class="audio-seek" id="audio-seek" min="0" max="100" value="0" aria-label="Seek audio position" />
+        <div class="audio-buttons">
+          <button class="btn-play" id="play-btn" aria-label="Play audio">▶</button>
+          <span class="time-display"><span id="current-time">0:00</span> / <span id="total-time">0:00</span></span>
+        </div>
+        <div class="volume-row">
+          <span>🔈</span>
+          <input type="range" class="audio-volume" id="volume-slider" min="0" max="1" step="0.01" value="0.8" aria-label="Volume control" />
+          <span>🔊</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── VIDEO ─────────────────────────────────── -->
+<section id="video-section" aria-labelledby="video-title">
+  <div class="container">
+    <div class="section-label">04 — Video</div>
+    <h2 class="section-title reveal" id="video-title">Watch & Learn</h2>
+    <div class="divider"></div>
+    <p class="section-sub">Embedded YouTube video content with responsive aspect-ratio container. <strong>HCI:</strong> Aesthetic design — clean presentation with intentional visual hierarchy.</p>
+    <div style="position:relative; max-width:800px; margin:0 auto;">
+      <div class="video-border-glow"></div>
+      <div class="video-wrapper reveal reveal-delay-1">
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/yNzLBI0wsGU?si=f9o_g5XugMGI_zNj" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      </div>
+    </div>
+    <p style="text-align:center; margin-top:1rem; color:var(--muted); font-size:0.85rem;">▲ HCI - Human Computer Interaction. What Is HCI? by IxDF - Interaction Design Foundation · YouTube embed</p>
+  </div>
+</section>
+
+<!-- ── DATA VISUALISATION ─────────────────────── -->
+<section id="dataviz" aria-labelledby="dataviz-title">
+  <div class="container">
+    <div class="section-label">05 — Interactive Graphics & Data</div>
+    <h2 class="section-title reveal" id="dataviz-title">Data Visualisation</h2>
+    <div class="divider"></div>
+    <p class="section-sub">Why use multiple media types? Because humans learn and remember far more when information is delivered through multiple senses. Engaging more senses simultaneously produces dramatically better information retention — up to 80% when information is seen, heard, AND actively done.</p>
+    <div class="chart-container reveal reveal-delay-1">
+      <div class="chart-legend">
+        <div class="legend-item"><span class="legend-dot" style="background:rgba(232,184,75,0.85)"></span> Sight Only (20%)</div>
+        <div class="legend-item"><span class="legend-dot" style="background:rgba(79,142,247,0.85)"></span> Hearing Only (30%)</div>
+        <div class="legend-item"><span class="legend-dot" style="background:rgba(79,200,142,0.85)"></span> Sight + Hearing (50%)</div>
+        <div class="legend-item"><span class="legend-dot" style="background:rgba(232,91,91,0.85)"></span> Sight + Hearing + Action (80%)</div>
+      </div>
+      <canvas id="myChart" aria-label="Bar chart of information retention by media type" role="img"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- ── ANIMATIONS SHOWCASE ───────────────────── -->
+<section id="animations" aria-labelledby="anim-title">
+  <div class="container">
+    <div class="section-label">06 — Animation & Motion</div>
+    <h2 class="section-title reveal" id="anim-title">CSS Animations</h2>
+    <div class="divider"></div>
+    <p class="section-sub">Eight distinct CSS animations demonstrating keyframes, transforms, and timing functions. All achieved with pure CSS — no JavaScript required.</p>
+    <div class="anim-grid">
+      <div class="anim-card reveal">
+        <div class="demo-spin" aria-hidden="true"></div>
+        <span class="label">Spin / Loader</span>
+      </div>
+      <div class="anim-card reveal reveal-delay-1">
+        <div class="demo-pulse" aria-hidden="true"></div>
+        <span class="label">Pulse / Scale</span>
+      </div>
+      <div class="anim-card reveal reveal-delay-2">
+        <div style="height:48px;display:flex;align-items:flex-end;">
+          <div class="demo-bounce" aria-hidden="true"></div>
+        </div>
+        <span class="label">Bounce</span>
+      </div>
+      <div class="anim-card reveal reveal-delay-3">
+        <div class="demo-wave" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <span class="label">Wave Bars</span>
+      </div>
+      <div class="anim-card reveal">
+        <div class="demo-morph" aria-hidden="true"></div>
+        <span class="label">Morph Shape</span>
+      </div>
+      <div class="anim-card reveal reveal-delay-1">
+        <div class="demo-float" aria-hidden="true">⬡</div>
+        <span class="label">Float / Levitate</span>
+      </div>
+      <div class="anim-card reveal reveal-delay-2">
+        <div class="demo-gradient" aria-hidden="true"></div>
+        <span class="label">Gradient Shift</span>
+      </div>
+      <div class="anim-card reveal reveal-delay-3">
+        <div class="demo-typewriter" aria-hidden="true">MediaSphere</div>
+        <span class="label">Typewriter</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT FORM ───────────────────────────── -->
+<section id="contact" aria-labelledby="contact-title">
+  <div class="container">
+    <div class="section-label">07 — Interaction & Forms</div>
+    <h2 class="section-title reveal" id="contact-title">Get in Touch</h2>
+    <div class="divider"></div>
+    <div class="contact-grid">
+      <div class="contact-info reveal">
+        <h3>Contact Information</h3>
+        <p>Reach out for questions, feedback, or collaboration. Fields are validated in real-time to prevent errors before submission.</p>
+        <div class="contact-chips">
+          <div class="contact-chip"><span class="icon">📧</span> max.kabechani@cs.unza.zm</div>
+          <div class="contact-chip"><span class="icon">📍</span> Lusaka, Zambia</div>
+          <div class="contact-chip"><span class="icon">🎓</span> University of Zambia</div>
+          <div class="contact-chip"><span class="icon">📞</span> +260 778 160 578</div>
+        </div>
+        <div style="margin-top:2rem;padding:1.25rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);">
+          <p style="font-size:0.82rem;color:var(--muted);margin:0;"><strong style="color:var(--text);">HCI Principles Applied:</strong><br>
+          ✓ Error prevention via real-time validation<br>
+          ✓ Feedback — success toast on submission<br>
+          ✓ Consistency — uniform field styling<br>
+          ✓ Loading state on submit button</p>
+        </div>
+      </div>
+      <form id="contact-form" class="reveal reveal-delay-1" novalidate aria-label="Contact form">
+        <div class="form-group">
+          <label for="name">Full Name *</label>
+          <input type="text" id="name" name="name" placeholder="Your full name" autocomplete="name" required />
+          <p class="field-msg error" id="name-msg" role="alert">Please enter your full name</p>
+          <p class="field-msg success" id="name-ok">✓ Looks good!</p>
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address *</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required />
+          <p class="field-msg error" id="email-msg" role="alert">Please enter a valid email address</p>
+          <p class="field-msg success" id="email-ok">✓ Valid email</p>
+        </div>
+        <div class="form-group">
+          <label for="subject">Subject</label>
+          <select id="subject" name="subject" aria-label="Select message subject">
+            <option value="">Select a topic…</option>
+            <option value="feedback">Feedback</option>
+            <option value="collaboration">Collaboration</option>
+            <option value="question">General Question</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="message">Message *</label>
+          <textarea id="message" name="message" placeholder="Write your message here…" required></textarea>
+          <p class="field-msg error" id="msg-msg" role="alert">Message must be at least 20 characters</p>
+          <p class="field-msg success" id="msg-ok">✓ Good length</p>
+        </div>
+        <button type="submit" class="btn-submit" id="submit-btn">
+          <span id="btn-text">Send Message</span>
+          <span class="btn-spinner" id="btn-spinner"></span>
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">MediaSphere</div>
+    <p class="footer-tagline">A Multimedia & HCI Showcase — University of Zambia · MMHCI Assignment</p>
+    <nav class="footer-links" aria-label="Footer navigation">
+      <a href="#hero">Home</a>
+      <a href="#about">Typography</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#audio-section">Audio</a>
+      <a href="#video-section">Video</a>
+      <a href="#dataviz">Data</a>
+      <a href="#animations">Motion</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <!-- <div class="footer-social" aria-label="Social links">
+      <a href="#" class="social-btn" aria-label="GitHub">⌨</a>
+      <a href="#" class="social-btn" aria-label="LinkedIn">in</a>
+      <a href="#" class="social-btn" aria-label="Email">✉</a>
+    </div> -->
+    <p class="footer-copy">© 2026 MediaSphere. Built by Max Kabechani as a MMHCI coursework demonstration.</p>
+  </div>
+</footer>
+
+<!-- ── BACK TO TOP (HCI: user freedom) ────────── -->
+<button id="back-to-top" aria-label="Back to top of page" title="Back to top">↑</button>
+
+<!-- ── TOAST ──────────────────────────────────── -->
+<div id="toast" role="status" aria-live="polite">✓ Message sent successfully!</div>
+
+<!-- ════════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════ -->
+<script>
+/* ─ SCROLL PROGRESS ─────────────────────────── */
+const scrollBar = document.getElementById('scroll-progress');
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const pct = (doc.scrollTop / (doc.scrollHeight - doc.clientHeight)) * 100;
+  scrollBar.style.width = pct + '%';
+}, { passive: true });
+
+/* ─ BACK TO TOP ──────────────────────────────── */
+const backTop = document.getElementById('back-to-top');
+window.addEventListener('scroll', () => {
+  backTop.classList.toggle('visible', window.scrollY > 400);
+}, { passive: true });
+backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+/* ─ THEME TOGGLE ─────────────────────────────── */
+const themeToggle = document.getElementById('theme-toggle');
+const root = document.documentElement;
+let dark = true;
+themeToggle.addEventListener('click', () => {
+  dark = !dark;
+  root.dataset.theme = dark ? 'dark' : 'light';
+  themeToggle.textContent = dark ? '🌙' : '☀️';
+});
+
+/* ─ HAMBURGER MENU ───────────────────────────── */
+const hamburger = document.getElementById('hamburger');
+const navLinks  = document.getElementById('nav-links');
+hamburger.addEventListener('click', () => {
+  const open = navLinks.classList.toggle('open');
+  hamburger.textContent = open ? '✕' : '☰';
+  hamburger.setAttribute('aria-expanded', open);
+});
+// Close on link click
+navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  navLinks.classList.remove('open');
+  hamburger.textContent = '☰';
+  hamburger.setAttribute('aria-expanded', 'false');
+}));
+
+/* ─ ACTIVE NAV LINK (Intersection Observer) ─── */
+const sections = document.querySelectorAll('section[id]');
+const navAs = document.querySelectorAll('.nav-links a');
+const navObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navAs.forEach(a => a.classList.remove('active'));
+      const active = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { threshold: 0.4 });
+sections.forEach(s => navObserver.observe(s));
+
+/* ─ SCROLL REVEAL ────────────────────────────── */
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      revealObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+/* ─ PARTICLE CANVAS ──────────────────────────── */
+(function() {
+  const canvas = document.getElementById('particle-canvas');
+  const ctx    = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize() {
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function rand(a, b) { return a + Math.random() * (b - a); }
+
+  class Particle {
+    constructor() { this.reset(); }
+    reset() {
+      this.x  = rand(0, W);
+      this.y  = rand(0, H);
+      this.r  = rand(0.5, 2.5);
+      this.vx = rand(-0.25, 0.25);
+      this.vy = rand(-0.4, -0.1);
+      this.alpha = rand(0.1, 0.5);
+    }
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      if (this.y < -5 || this.x < -5 || this.x > W + 5) this.reset();
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(232,184,75,${this.alpha})`;
+      ctx.fill();
+    }
+  }
+
+  for (let i = 0; i < 80; i++) particles.push(new Particle());
+
+  // Draw connecting lines between close particles
+  function drawLines() {
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 100) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(232,184,75,${0.08 * (1 - dist/100)})`;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => { p.update(); p.draw(); });
+    drawLines();
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
+/* ─ GALLERY FILTER ───────────────────────────── */
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const f = btn.dataset.filter;
+    document.querySelectorAll('.gallery-item').forEach(item => {
+      const match = f === 'all' || item.dataset.cat === f;
+      item.dataset.hidden = match ? 'false' : 'true';
+      item.style.display  = match ? '' : 'none';
+    });
+  });
+});
+
+/* ─ GALLERY LIGHTBOX ─────────────────────────── */
+const lightbox = document.getElementById('lightbox');
+const lbImg    = document.getElementById('lightbox-img');
+const lbCap    = document.getElementById('lightbox-caption');
+
+document.querySelectorAll('.gallery-item').forEach(item => {
+  const open = () => {
+    const img = item.querySelector('img');
+    lbImg.src = img.src.replace('600/450', '1200/900');
+    lbImg.alt = img.alt;
+    lbCap.textContent = item.dataset.label;
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    document.getElementById('lightbox-close').focus();
+  };
+  item.addEventListener('click', open);
+  item.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') open(); });
+});
+
+document.getElementById('lightbox-close').addEventListener('click', closeLB);
+lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLB(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && lightbox.classList.contains('open')) closeLB(); });
+
+function closeLB() {
+  lightbox.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+/* ─ WAVEFORM BARS ────────────────────────────── */
+const waveform = document.getElementById('waveform-bars');
+const heights  = [20,28,36,45,38,28,18,32,44,48,40,28,20,34,46,42,30,22,38,46,40,28,18,36,48,44,32,22,30,42,38,26,18,28,40,30];
+heights.forEach((h, i) => {
+  const bar = document.createElement('div');
+  bar.className = 'bar';
+  bar.style.height = h + 'px';
+  if (i % 3 === 0) bar.style.animationDelay = (i * 0.05) + 's';
+  waveform.appendChild(bar);
+});
+
+/* Animate bars when playing */
+const wBars = waveform.querySelectorAll('.bar');
+function animateBars(playing) {
+  wBars.forEach((bar, i) => {
+    if (playing) {
+      bar.style.animation = `wave ${0.5 + (i % 5) * 0.15}s ease ${(i * 0.04) % 0.6}s infinite`;
+      bar.style.background = 'var(--accent)';
+    } else {
+      bar.style.animation = '';
+      bar.style.height = heights[i] + 'px';
+      bar.style.background = 'var(--border)';
+    }
+  });
+}
+
+/* ─ AUDIO PLAYER ─────────────────────────────── */
+const audio  = document.getElementById('audio-player');
+const playBtn= document.getElementById('play-btn');
+const seek   = document.getElementById('audio-seek');
+const volSlider = document.getElementById('volume-slider');
+const curTime   = document.getElementById('current-time');
+const totTime   = document.getElementById('total-time');
+
+function fmt(s) {
+  const m = Math.floor(s / 60);
+  const ss = Math.floor(s % 60).toString().padStart(2,'0');
+  return `${m}:${ss}`;
+}
+
+playBtn.addEventListener('click', () => {
+  if (audio.paused) {
+    audio.play();
+    playBtn.textContent = '⏸';
+    playBtn.setAttribute('aria-label', 'Pause audio');
+    waveform.classList.add('playing');
+    animateBars(true);
+  } else {
+    audio.pause();
+    playBtn.textContent = '▶';
+    playBtn.setAttribute('aria-label', 'Play audio');
+    waveform.classList.remove('playing');
+    animateBars(false);
+  }
+});
+
+audio.addEventListener('timeupdate', () => {
+  if (!audio.duration) return;
+  const pct = (audio.currentTime / audio.duration) * 100;
+  seek.value = pct;
+  curTime.textContent = fmt(audio.currentTime);
+});
+
+audio.addEventListener('loadedmetadata', () => {
+  totTime.textContent = fmt(audio.duration);
+});
+
+seek.addEventListener('input', () => {
+  if (audio.duration) audio.currentTime = (seek.value / 100) * audio.duration;
+});
+
+volSlider.addEventListener('input', () => {
+  audio.volume = parseFloat(volSlider.value);
+});
+audio.volume = 0.8;
+
+audio.addEventListener('ended', () => {
+  playBtn.textContent = '▶';
+  playBtn.setAttribute('aria-label', 'Play audio');
+  waveform.classList.remove('playing');
+  animateBars(false);
+  seek.value = 0;
+});
+
+/* ─ CHART.JS ─────────────────────────────────── */
+(function() {
+  const labels = ['Sight Only', 'Hearing Only', 'Sight + Hearing', 'Sight + Hearing + Action'];
+  const retentionData = [20, 30, 50, 80];
+  const barColors = [
+    'rgba(232,184,75,0.75)',
+    'rgba(79,142,247,0.75)',
+    'rgba(79,200,142,0.75)',
+    'rgba(232,91,91,0.75)'
+  ];
+  const barBorders = [
+    'rgba(232,184,75,1)',
+    'rgba(79,142,247,1)',
+    'rgba(79,200,142,1)',
+    'rgba(232,91,91,1)'
+  ];
+
+  const isDark = () => document.documentElement.dataset.theme !== 'light';
+  const gridColor  = () => isDark() ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.07)';
+  const labelColor = () => isDark() ? '#7a7a90' : '#7a7060';
+
+  const ctx = document.getElementById('myChart').getContext('2d');
+  const chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Retention Rate (%)',
+          data: retentionData,
+          backgroundColor: barColors,
+          borderColor: barBorders,
+          borderWidth: 1,
+          borderRadius: 6,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      animation: { duration: 1200, easing: 'easeOutQuart' },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1a1a26',
+          titleColor: '#f0eee8',
+          bodyColor: '#7a7a90',
+          borderColor: '#2a2a35',
+          borderWidth: 1,
+          callbacks: {
+            label: (ctx) => ` ${ctx.dataset.label}: ${ctx.parsed.y}%`
+          }
+        }
+      },
+      scales: {
+        x: { grid: { color: gridColor() }, ticks: { color: labelColor(), font: { family: 'DM Sans' } } },
+        y: {
+          grid: { color: gridColor() },
+          ticks: { color: labelColor(), font: { family: 'DM Sans' }, callback: v => v + '%' },
+          min: 0, max: 100
+        }
+      }
+    }
+  });
+
+  // Re-apply colours on theme switch
+  themeToggle.addEventListener('click', () => {
+    chart.options.scales.x.grid.color = gridColor();
+    chart.options.scales.y.grid.color = gridColor();
+    chart.options.scales.x.ticks.color = labelColor();
+    chart.options.scales.y.ticks.color = labelColor();
+    chart.update();
+  });
+})();
+
+/* ─ CONTACT FORM VALIDATION ──────────────────── */
+function validate(field, condition, errId, okId) {
+  const valid = condition();
+  field.className = valid ? 'valid' : 'invalid';
+  document.getElementById(errId).className = 'field-msg error' + (valid ? '' : ' show');
+  document.getElementById(okId ).className = 'field-msg success' + (valid ? ' show' : '');
+  return valid;
+}
+
+const nameField = document.getElementById('name');
+const emailField = document.getElementById('email');
+const msgField  = document.getElementById('message');
+
+nameField.addEventListener('blur', () =>
+  validate(nameField, () => nameField.value.trim().length >= 2, 'name-msg', 'name-ok'));
+emailField.addEventListener('blur', () =>
+  validate(emailField, () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailField.value), 'email-msg', 'email-ok'));
+msgField.addEventListener('blur', () =>
+  validate(msgField, () => msgField.value.trim().length >= 20, 'msg-msg', 'msg-ok'));
+
+document.getElementById('contact-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const n = validate(nameField,  () => nameField.value.trim().length >= 2, 'name-msg', 'name-ok');
+  const em= validate(emailField, () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailField.value), 'email-msg', 'email-ok');
+  const m = validate(msgField,   () => msgField.value.trim().length >= 20, 'msg-msg', 'msg-ok');
+  if (!n || !em || !m) return;
+
+  const btn     = document.getElementById('submit-btn');
+  const btnText = document.getElementById('btn-text');
+  const spinner = document.getElementById('btn-spinner');
+
+  // Loading state
+  btn.disabled = true;
+  btnText.textContent = 'Sending…';
+  spinner.style.display = 'block';
+
+  // Simulate async send
+  setTimeout(() => {
+    btn.disabled = false;
+    btnText.textContent = 'Send Message';
+    spinner.style.display = 'none';
+    this.reset();
+    [nameField, emailField, msgField].forEach(f => f.className = '');
+    ['name-ok','email-ok','msg-ok','name-msg','email-msg','msg-msg'].forEach(id => {
+      document.getElementById(id).className = document.getElementById(id).className.replace(' show','');
+    });
+    showToast();
+  }, 1800);
+});
+
+/* ─ TOAST ────────────────────────────────────── */
+function showToast() {
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3500);
+}
+</script>
+</body>
+</html>
