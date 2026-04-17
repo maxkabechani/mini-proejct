@@ -3,12 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="MediaSphere is a multimedia and Human-Computer Interaction (HCI) showcase featuring interactive graphics, audio, video, animation, and data visualisation." />
+  <meta name="robots" content="index,follow" />
+  <meta name="theme-color" content="#09090f" />
+  <meta name="color-scheme" content="dark light" />
   <title>MediaSphere — Multimedia & HCI Showcase</title>
+  <meta property="og:title" content="MediaSphere — Multimedia & HCI Showcase" />
+  <meta property="og:description" content="A multimedia and HCI showcase with interactive visuals, audio, video, animation, and retention-focused data visualisation." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23e8b84b'/%3E%3Cstop offset='100%25' stop-color='%234f8ef7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%2309090f'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='url(%23g)' stroke-width='6'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%23f0eee8'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://www.youtube-nocookie.com" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="dns-prefetch" href="//images.unsplash.com" />
+  <link rel="dns-prefetch" href="//www.soundhelix.com" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     /* ═══════════════════════════════════════
        DESIGN TOKENS & THEME
@@ -50,6 +60,23 @@
       line-height: 1.7;
       overflow-x: hidden;
       transition: background var(--transition), color var(--transition);
+    }
+    .skip-link {
+      position: absolute;
+      top: -48px;
+      left: 1rem;
+      background: var(--accent);
+      color: #0a0a0a;
+      font-weight: 700;
+      padding: 0.6rem 0.9rem;
+      border-radius: 8px;
+      z-index: 10001;
+      transition: top 0.2s ease;
+    }
+    .skip-link:focus { top: 1rem; }
+    :focus-visible {
+      outline: 2px solid var(--accent2);
+      outline-offset: 2px;
     }
     img { max-width: 100%; display: block; }
     a { color: var(--accent); text-decoration: none; }
@@ -134,6 +161,10 @@
        SHARED LAYOUT
     ═══════════════════════════════════════ */
     section { padding: 5rem 2rem; }
+    section:not(#hero) {
+      content-visibility: auto;
+      contain-intrinsic-size: 800px;
+    }
     .container { max-width: 1100px; margin: 0 auto; }
     .section-label {
       font-size: 0.72rem;
@@ -317,27 +348,6 @@
        3. GALLERY
     ═══════════════════════════════════════ */
     #gallery { background: var(--bg); }
-    .filter-bar {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      margin-bottom: 2rem;
-    }
-    .filter-btn {
-      background: var(--card);
-      border: 1px solid var(--border);
-      color: var(--muted);
-      padding: 0.45rem 1.1rem;
-      border-radius: 100px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      transition: all var(--transition);
-    }
-    .filter-btn:hover, .filter-btn.active {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #0a0a0a;
-    }
     .gallery-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -876,9 +886,28 @@
       section { padding: 3rem 1.25rem; }
       .anim-grid { grid-template-columns: 1fr 1fr; }
     }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
   </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "MediaSphere",
+    "description": "A multimedia and Human-Computer Interaction showcase featuring interactive graphics, audio, video, animation, and data visualisation.",
+    "inLanguage": "en"
+  }
+  </script>
 </head>
 <body>
+
+<a class="skip-link" href="#main-content">Skip to main content</a>
 
 <!-- ── SCROLL PROGRESS ───────────────────────── -->
 <div id="scroll-progress" aria-hidden="true"></div>
@@ -897,10 +926,12 @@
     <li><a href="#contact">Contact</a></li>
   </ul>
   <div class="nav-right">
-    <button id="theme-toggle" aria-label="Toggle colour theme" title="Toggle theme">🌙</button>
-    <button class="nav-hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">☰</button>
+    <button type="button" id="theme-toggle" aria-label="Toggle colour theme" title="Toggle theme">🌙</button>
+    <button type="button" class="nav-hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">☰</button>
   </div>
 </nav>
+
+<main id="main-content">
 
 <!-- ── HERO ──────────────────────────────────── -->
 <section id="hero" aria-labelledby="hero-title">
@@ -957,15 +988,15 @@
     <div class="gallery-grid reveal reveal-delay-1" id="gallery-grid" role="list">
       <!-- Images via unsplash — HCI & UX/UI themed -->
       <div class="gallery-item" data-cat="design"   data-label="Interface Design"       role="listitem" tabindex="0" aria-label="Open Interface Design image">
-        <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600&h=450&fit=crop"   alt="User interface design on screen" loading="lazy" />
+        <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=480&h=360&q=70" srcset="https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=360&h=270&q=70 360w, https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=480&h=360&q=70 480w, https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=720&h=540&q=70 720w" sizes="(max-width: 480px) 100vw, (max-width: 1100px) 33vw, 360px" width="480" height="360" alt="User interface design on screen" loading="lazy" decoding="async" />
         <div class="gallery-overlay"><span>Design</span></div>
       </div>
       <div class="gallery-item" data-cat="research" data-label="User Research & Testing"   role="listitem" tabindex="0" aria-label="Open User Research image">
-        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=450&fit=crop"  alt="Team conducting user research" loading="lazy" />
+        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=480&h=360&q=70" srcset="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=360&h=270&q=70 360w, https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=480&h=360&q=70 480w, https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=720&h=540&q=70 720w" sizes="(max-width: 480px) 100vw, (max-width: 1100px) 33vw, 360px" width="480" height="360" alt="Team conducting user research" loading="lazy" decoding="async" />
         <div class="gallery-overlay"><span>Research</span></div>
       </div>
       <div class="gallery-item" data-cat="develop" data-label="Develop"   role="listitem" tabindex="0" aria-label="Open Develop image">
-        <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=450&fit=crop"   alt="Interaction design prototyping" loading="lazy" />
+        <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=480&h=360&q=70" srcset="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=360&h=270&q=70 360w, https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=480&h=360&q=70 480w, https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=720&h=540&q=70 720w" sizes="(max-width: 480px) 100vw, (max-width: 1100px) 33vw, 360px" width="480" height="360" alt="Interaction design prototyping" loading="lazy" decoding="async" />
         <div class="gallery-overlay"><span>Develop</span></div>
       </div>
     </div>
@@ -974,7 +1005,7 @@
 
 <!-- Lightbox (HCI: user control — close anytime) -->
 <div id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
-  <button id="lightbox-close" aria-label="Close image viewer">✕</button>
+  <button type="button" id="lightbox-close" aria-label="Close image viewer">✕</button>
   <img id="lightbox-img" src="" alt="" />
   <p id="lightbox-caption"></p>
 </div>
@@ -995,11 +1026,11 @@
       <div class="waveform-bars" id="waveform-bars" aria-hidden="true">
         <!-- 36 bars generated by JS -->
       </div>
-      <audio id="audio-player" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" preload="metadata" aria-label="Audio player"></audio>
+      <audio id="audio-player" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" preload="none" aria-label="Audio player"></audio>
       <div class="audio-controls">
         <input type="range" class="audio-seek" id="audio-seek" min="0" max="100" value="0" aria-label="Seek audio position" />
         <div class="audio-buttons">
-          <button class="btn-play" id="play-btn" aria-label="Play audio">▶</button>
+          <button type="button" class="btn-play" id="play-btn" aria-label="Play audio">▶</button>
           <span class="time-display"><span id="current-time">0:00</span> / <span id="total-time">0:00</span></span>
         </div>
         <div class="volume-row">
@@ -1012,6 +1043,8 @@
   </div>
 </section>
 
+</main>
+
 <!-- ── VIDEO ─────────────────────────────────── -->
 <section id="video-section" aria-labelledby="video-title">
   <div class="container">
@@ -1022,7 +1055,7 @@
     <div style="position:relative; max-width:800px; margin:0 auto;">
       <div class="video-border-glow"></div>
       <div class="video-wrapper reveal reveal-delay-1">
-        <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/yNzLBI0wsGU?rel=0&modestbranding=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/yNzLBI0wsGU?rel=0&modestbranding=1" title="YouTube video player" loading="lazy" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
       </div>
     </div>
     <p style="text-align:center; margin-top:1rem; color:var(--muted); font-size:0.85rem;">▲ HCI - Human Computer Interaction. What Is HCI? by IxDF - Interaction Design Foundation · YouTube embed</p>
@@ -1183,7 +1216,7 @@
 </footer>
 
 <!-- ── BACK TO TOP (HCI: user freedom) ────────── -->
-<button id="back-to-top" aria-label="Back to top of page" title="Back to top">↑</button>
+<button type="button" id="back-to-top" aria-label="Back to top of page" title="Back to top">↑</button>
 
 <!-- ── TOAST ──────────────────────────────────── -->
 <div id="toast" role="status" aria-live="polite">✓ Message sent successfully!</div>
@@ -1238,9 +1271,15 @@ const navAs = document.querySelectorAll('.nav-links a');
 const navObserver = new IntersectionObserver((entries) => {
   entries.forEach(e => {
     if (e.isIntersecting) {
-      navAs.forEach(a => a.classList.remove('active'));
+      navAs.forEach(a => {
+        a.classList.remove('active');
+        a.removeAttribute('aria-current');
+      });
       const active = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
-      if (active) active.classList.add('active');
+      if (active) {
+        active.classList.add('active');
+        active.setAttribute('aria-current', 'page');
+      }
     }
   });
 }, { threshold: 0.4 });
@@ -1325,20 +1364,6 @@ document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
   animate();
 })();
 
-/* ─ GALLERY FILTER ───────────────────────────── */
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const f = btn.dataset.filter;
-    document.querySelectorAll('.gallery-item').forEach(item => {
-      const match = f === 'all' || item.dataset.cat === f;
-      item.dataset.hidden = match ? 'false' : 'true';
-      item.style.display  = match ? '' : 'none';
-    });
-  });
-});
-
 /* ─ GALLERY LIGHTBOX ─────────────────────────── */
 const lightbox = document.getElementById('lightbox');
 const lbImg    = document.getElementById('lightbox-img');
@@ -1347,7 +1372,11 @@ const lbCap    = document.getElementById('lightbox-caption');
 document.querySelectorAll('.gallery-item').forEach(item => {
   const open = () => {
     const img = item.querySelector('img');
-    lbImg.src = img.src.replace('600/450', '1200/900');
+    const full = new URL(img.currentSrc || img.src);
+    full.searchParams.set('w', '1200');
+    full.searchParams.set('h', '900');
+    full.searchParams.set('q', '80');
+    lbImg.src = full.toString();
     lbImg.alt = img.alt;
     lbCap.textContent = item.dataset.label;
     lightbox.classList.add('open');
@@ -1453,6 +1482,25 @@ audio.addEventListener('ended', () => {
 
 /* ─ CHART.JS ─────────────────────────────────── */
 (function() {
+  let chartReady = null;
+
+  function loadChartJs() {
+    if (window.Chart) return Promise.resolve();
+    if (chartReady) return chartReady;
+
+    chartReady = new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js';
+      s.async = true;
+      s.onload = () => resolve();
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
+
+    return chartReady;
+  }
+
+  function initChart() {
   const labels = ['Sight Only', 'Hearing Only', 'Sight + Hearing', 'Sight + Hearing + Action'];
   const retentionData = [20, 30, 50, 80];
   const barColors = [
@@ -1523,6 +1571,27 @@ audio.addEventListener('ended', () => {
     chart.options.scales.y.ticks.color = labelColor();
     chart.update();
   });
+
+  }
+
+  const dataviz = document.getElementById('dataviz');
+  let initialized = false;
+
+  const chartObserver = new IntersectionObserver((entries) => {
+    entries.forEach(async (entry) => {
+      if (!entry.isIntersecting || initialized) return;
+      initialized = true;
+      chartObserver.disconnect();
+      try {
+        await loadChartJs();
+        initChart();
+      } catch (err) {
+        console.error('Chart.js failed to load', err);
+      }
+    });
+  }, { rootMargin: '300px 0px' });
+
+  chartObserver.observe(dataviz);
 })();
 
 /* ─ CONTACT FORM VALIDATION ──────────────────── */
