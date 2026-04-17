@@ -13,12 +13,14 @@
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23e8b84b'/%3E%3Cstop offset='100%25' stop-color='%234f8ef7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%2309090f'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='url(%23g)' stroke-width='6'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%23f0eee8'/%3E%3C/svg%3E" />
-  <link rel="preconnect" href="https://www.youtube-nocookie.com" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="dns-prefetch" href="//images.unsplash.com" />
   <link rel="dns-prefetch" href="//www.soundhelix.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@400;500;600&display=swap" />
+  </noscript>
   <style>
     /* ═══════════════════════════════════════
        DESIGN TOKENS & THEME
@@ -29,7 +31,7 @@
       --card:      #18181f;
       --border:    #2a2a35;
       --text:      #f0eee8;
-      --muted:     #7a7a90;
+      --muted:     #a3a3b8;
       --accent:    #e8b84b;
       --accent2:   #4f8ef7;
       --danger:    #e85b5b;
@@ -45,7 +47,7 @@
       --card:    #ffffff;
       --border:  #e0ddd5;
       --text:    #1a1916;
-      --muted:   #7a7060;
+      --muted:   #5e5448;
     }
 
     /* ═══════════════════════════════════════
@@ -187,6 +189,7 @@
       margin-bottom: 2.5rem;
       font-size: 1.05rem;
     }
+    .section-sub strong { color: var(--text); }
     .divider {
       width: 48px; height: 3px;
       background: var(--accent);
@@ -1043,8 +1046,6 @@
   </div>
 </section>
 
-</main>
-
 <!-- ── VIDEO ─────────────────────────────────── -->
 <section id="video-section" aria-labelledby="video-title">
   <div class="container">
@@ -1190,6 +1191,8 @@
     </div>
   </div>
 </section>
+
+</main>
 
 <!-- ── FOOTER ─────────────────────────────────── -->
 <footer>
